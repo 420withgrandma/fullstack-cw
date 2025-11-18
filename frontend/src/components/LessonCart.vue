@@ -4,7 +4,7 @@
     <ul v-if="cart.length">
       <li v-for="(lesson, index) in cart" :key="index">
         {{ lesson.subject }} - £{{ lesson.price }}
-        <button @click="$emit('remove-from-cart', lesson)">Remove</button>
+        <button @click="removeLesson(lesson)">Remove</button>
       </li>
     </ul>
     <p v-else>Your cart is empty.</p>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "LessonCart",
   props: {
@@ -25,6 +27,22 @@ export default {
   computed: {
     totalPrice() {
       return this.cart.reduce((sum, lesson) => sum + lesson.price, 0);
+    }
+  },
+  methods: {
+    async removeLesson(lesson) {
+      // Emit event so App.vue updates cart locally
+      this.$emit("remove-from-cart", lesson);
+
+      // Sync with backend (increment spaces back)
+      try {
+        await axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
+          spaces: lesson.spaces + 1
+        });
+        console.log("Lesson spaces updated in backend");
+      } catch (err) {
+        console.error("Failed to update lesson spaces:", err);
+      }
     }
   }
 };
