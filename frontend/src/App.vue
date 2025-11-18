@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import LessonList from "./components/LessonList.vue";
 import LessonCart from "./components/LessonCart.vue";
 import LessonCheckout from "./components/LessonCheckout.vue";
@@ -33,13 +34,19 @@ export default {
   },
   data() {
     return {
-      lessons: [
-        { id: 1, subject: "Math", location: "London", price: 30, spaces: 5 },
-        { id: 2, subject: "Science", location: "Manchester", price: 25, spaces: 3 },
-        { id: 3, subject: "History", location: "Birmingham", price: 20, spaces: 2 }
-      ],
+      lessons: [],
       cart: []
     };
+  },
+  created() {
+    // Fetch lessons from backend instead of hardcoding
+    axios.get("http://localhost:5000/lessons")
+      .then(res => {
+        this.lessons = res.data;
+      })
+      .catch(err => {
+        console.error("Failed to fetch lessons:", err);
+      });
   },
   methods: {
     addToCart(lesson) {
@@ -60,10 +67,16 @@ export default {
       }
     },
     submitOrder(orderDetails) {
-      console.log("Order submitted:", orderDetails);
-      console.log("Cart contents:", this.cart);
-      alert("Order placed successfully!");
-      this.cart = []; // clear cart after order
+      // Send order to backend
+      axios.post("http://localhost:5000/orders", orderDetails)
+        .then(() => {
+          alert("Order placed successfully!");
+          this.cart = []; // clear cart after order
+        })
+        .catch(err => {
+          alert("Failed to place order");
+          console.error(err);
+        });
     }
   }
 };
