@@ -27,11 +27,7 @@ import LessonCheckout from "./components/LessonCheckout.vue";
 
 export default {
   name: "App",
-  components: {
-    LessonList,
-    LessonCart,
-    LessonCheckout
-  },
+  components: { LessonList, LessonCart, LessonCheckout },
   data() {
     return {
       lessons: [],
@@ -39,52 +35,46 @@ export default {
     };
   },
   created() {
-    // Fetch lessons from backend instead of hardcoding
     axios.get("http://localhost:5000/lessons")
-      .then(res => {
-        this.lessons = res.data;
-      })
-      .catch(err => {
-        console.error("Failed to fetch lessons:", err);
-      });
+      .then(res => { this.lessons = res.data; })
+      .catch(err => { console.error("Failed to fetch lessons:", err); });
   },
   methods: {
     addToCart(lesson) {
       if (lesson.spaces > 0) {
-        this.cart.push(lesson);
-         lesson.spaces--;
+        const existing = this.cart.find(item => item._id === lesson._id);
+        if (existing) {
+          existing.qty++;
+        } else {
+          this.cart.push({ ...lesson, qty: 1 });
+        }
+        lesson.spaces--;
 
-        // Sync with backend (decrement spaces)
         axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
           spaces: lesson.spaces
         })
-        .then(res => {
-          console.log("Lesson updated in backend:", res.data);
-        })
-        .catch(err => {
-          console.error("Failed to update lesson spaces:", err);
-        });
-
-        console.log("Cart:", this.cart);
+        .then(res => console.log("Lesson updated:", res.data))
+        .catch(err => console.error("Failed to update lesson spaces:", err));
       } else {
         alert("No spaces left for this lesson!");
       }
-    }
     },
     removeFromCart(lesson) {
-      const index = this.cart.indexOf(lesson);
-      if (index !== -1) {
-        this.cart.splice(index, 1);
+      const existing = this.cart.find(item => item._id === lesson._id);
+      if (existing) {
+        if (existing.qty > 1) {
+          existing.qty--;
+        } else {
+          this.cart = this.cart.filter(item => item._id !== lesson._id);
+        }
         lesson.spaces++;
-        console.log("Cart:", this.cart);
       }
     },
     submitOrder(orderDetails) {
-      // Send order to backend
       axios.post("http://localhost:5000/orders", orderDetails)
         .then(() => {
           alert("Order placed successfully!");
-          this.cart = []; // clear cart after order
+          this.cart = [];
         })
         .catch(err => {
           alert("Failed to place order");
