@@ -50,6 +50,7 @@ export default {
         }
         lesson.spaces--;
 
+        // Sync with backend (decrement spaces)
         axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
           spaces: lesson.spaces
         })
@@ -59,6 +60,7 @@ export default {
         alert("No spaces left for this lesson!");
       }
     },
+
     removeFromCart(lesson) {
       const existing = this.cart.find(item => item._id === lesson._id);
       if (existing) {
@@ -68,8 +70,16 @@ export default {
           this.cart = this.cart.filter(item => item._id !== lesson._id);
         }
         lesson.spaces++;
+
+        // Sync with backend (increment spaces)
+        axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
+          spaces: lesson.spaces
+        })
+        .then(res => console.log("Lesson spaces updated:", res.data))
+        .catch(err => console.error("Failed to update lesson spaces:", err));
       }
     },
+
     submitOrder(orderDetails) {
       axios.post("http://localhost:5000/orders", orderDetails)
         .then(() => {
