@@ -52,11 +52,24 @@ export default {
     addToCart(lesson) {
       if (lesson.spaces > 0) {
         this.cart.push(lesson);
-        lesson.spaces--;
+         lesson.spaces--;
+
+        // Sync with backend (decrement spaces)
+        axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
+          spaces: lesson.spaces
+        })
+        .then(res => {
+          console.log("Lesson updated in backend:", res.data);
+        })
+        .catch(err => {
+          console.error("Failed to update lesson spaces:", err);
+        });
+
         console.log("Cart:", this.cart);
       } else {
         alert("No spaces left for this lesson!");
       }
+    }
     },
     removeFromCart(lesson) {
       const index = this.cart.indexOf(lesson);
