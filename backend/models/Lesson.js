@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+// models/Lesson.js
+import mongoose from "mongoose";
 
-const LessonSchema = new mongoose.Schema({
+const lessonSchema = new mongoose.Schema({
   subject: { type: String, required: true },
   location: { type: String, required: true },
   price: { type: Number, required: true },
-  spaces: { type: Number, required: true }
+  spaces: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("Lesson", LessonSchema);
-
+export default mongoose.model("Lesson", lessonSchema);
