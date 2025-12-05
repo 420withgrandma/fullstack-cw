@@ -2,59 +2,63 @@
   <div>
     <h2>Checkout</h2>
 
-    <!-- Cart Summary -->
-    <ul v-if="cart.length > 0">
-      <li v-for="item in cart" :key="item.id">
-        {{ item.title }} x {{ item.qty }} = £{{ item.price * item.qty }}
+    <ul v-if="cart().length > 0">
+      <li v-for="item in cart()" :key="item._id">
+        {{ item.subject }} x {{ item.qty }} = £{{ item.price * item.qty }}
       </li>
     </ul>
-    <p v-if="cart.length > 0">Total: £{{ total }}</p>
+    <p v-if="cart().length > 0">Total: £{{ total }}</p>
 
-    <!-- Checkout Form -->
     <form @submit.prevent="handleSubmit">
       <div>
         <label for="name">Name:</label>
         <input v-model="name" id="name" required />
       </div>
+      <p v-if="nameError" style="color: red; margin-top: 6px;">{{ nameError }}</p>
 
       <div>
         <label for="phone">Phone:</label>
         <input
           v-model="phone"
           id="phone"
-          pattern="\\d{10}"
+          pattern="[0-9]{10}"
           required
           title="Phone number must be exactly 10 digits"
         />
       </div>
+      <p v-if="phoneError" style="color: red; margin-top: 6px;">{{ phoneError }}</p>
 
-      <button type="submit" :disabled="cart.length === 0">
+      <button type="submit" :disabled="cart().length === 0">
         Place Order
       </button>
     </form>
 
-    <p v-if="cart.length === 0">Add lessons to cart before checkout.</p>
+    <p v-if="cart().length === 0">Add lessons to cart before checkout.</p>
   </div>
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
   name: "LessonCheckout",
-  props: {
-    cart: {
-      type: Array,
-      required: true
-    }
+  setup() {
+    const cart = inject("cart", () => []);
+    const submitOrder = inject("submitOrder", () => {});
+    return { cart, submitOrder };
   },
   data() {
     return {
       name: "",
-      phone: ""
+      phone: "",
+      nameError: "",
+      phoneError: ""
     };
   },
   computed: {
     total() {
-      return this.cart.reduce(
+      const cartArray = this.cart();
+      return cartArray.reduce(
         (sum, item) => sum + item.price * item.qty,
         0
       );
@@ -62,13 +66,32 @@ export default {
   },
   methods: {
     handleSubmit() {
+        this.nameError = "";
+        this.phoneError = "";
+
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const phoneRegex = /^\d{10}$/;
+
+      let hasError = false;
+      if (!this.name || !nameRegex.test(this.name)) {
+        this.nameError = "Name must contain letters and spaces only.";
+        hasError = true;
+      }
+
+      if (!this.phone || !phoneRegex.test(this.phone)) {
+        this.phoneError = "Phone must be exactly 10 digits.";
+        hasError = true;
+      }
+
+      if (hasError) return;
+
       const orderDetails = {
         name: this.name,
         phone: this.phone,
-        cart: this.cart,
+        cart: this.cart(),
         total: this.total
       };
-      this.$emit("submit-order", orderDetails);
+      this.submitOrder(orderDetails);
       this.name = "";
       this.phone = "";
     }

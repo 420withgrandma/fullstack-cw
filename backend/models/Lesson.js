@@ -1,5 +1,4 @@
-// models/Lesson.js
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const lessonSchema = new mongoose.Schema({
   subject: { type: String, required: true },
@@ -8,4 +7,4 @@ const lessonSchema = new mongoose.Schema({
   spaces: { type: Number, required: true },
 });
 
-export default mongoose.model("Lesson", lessonSchema);
+module.exports = mongoose.model("Lesson", lessonSchema);

@@ -2,36 +2,33 @@
   <div id="app">
     <h1>Lesson Booking App</h1>
 
-    <LessonList
-      :lessons="lessons"
-      @add-to-cart="addToCart"
-    />
+    <nav>
+      <router-link to="/">Lessons</router-link> |
+      <router-link to="/cart">Cart & Checkout</router-link>
+    </nav>
 
-    <LessonCart
-      :cart="cart"
-      @remove-from-cart="removeFromCart"
-    />
-
-    <LessonCheckout
-      :cart="cart"
-      @submit-order="submitOrder"
-    />
+    <router-view />
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import LessonList from "./components/LessonList.vue";
-import LessonCart from "./components/LessonCart.vue";
-import LessonCheckout from "./components/LessonCheckout.vue";
 
 export default {
   name: "App",
-  components: { LessonList, LessonCart, LessonCheckout },
   data() {
     return {
       lessons: [],
       cart: []
+    };
+  },
+  provide() {
+    return {
+      lessons: () => this.lessons,
+      cart: () => this.cart,
+      addToCart: this.addToCart,
+      removeFromCart: this.removeFromCart,
+      submitOrder: this.submitOrder
     };
   },
   created() {
@@ -50,7 +47,6 @@ export default {
         }
         lesson.spaces--;
 
-        // Sync with backend (decrement spaces)
         axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
           spaces: lesson.spaces
         })
@@ -69,11 +65,14 @@ export default {
         } else {
           this.cart = this.cart.filter(item => item._id !== lesson._id);
         }
-        lesson.spaces++;
 
-        // Sync with backend (increment spaces)
+        const targetLesson = this.lessons.find(l => l._id === lesson._id);
+        if (targetLesson) {
+          targetLesson.spaces++;
+        }
+
         axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
-          spaces: lesson.spaces
+          spaces: targetLesson ? targetLesson.spaces : lesson.spaces
         })
         .then(res => console.log("Lesson spaces updated:", res.data))
         .catch(err => console.error("Failed to update lesson spaces:", err));
@@ -85,6 +84,10 @@ export default {
         .then(() => {
           alert("Order placed successfully!");
           this.cart = [];
+
+          axios.get("http://localhost:5000/lessons")
+            .then(res => { this.lessons = res.data; })
+            .catch(err => console.error("Failed to refresh lessons:", err));
         })
         .catch(err => {
           alert("Failed to place order");
@@ -103,5 +106,19 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+nav {
+  margin-bottom: 20px;
+}
+
+nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #42b983;
+}
+
+nav a.router-link-exact-active {
+  font-weight: bold;
 }
 </style>

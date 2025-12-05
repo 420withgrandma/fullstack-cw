@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2>Your Cart</h2>
-    <ul v-if="cart.length > 0">
-      <li v-for="item in cart" :key="item._id">
+    <ul v-if="cart().length > 0">
+      <li v-for="item in cart()" :key="item._id">
         {{ item.subject }} - {{ item.location }}
         <br>
         £{{ item.price }} x {{ item.qty }} = £{{ item.price * item.qty }}
@@ -12,22 +12,23 @@
     </ul>
     <p v-else>Your cart is empty.</p>
 
-    <p v-if="cart.length > 0">Total: £{{ total }}</p>
+    <p v-if="cart().length > 0">Total: £{{ total }}</p>
   </div>
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
   name: "LessonCart",
-  props: {
-    cart: {
-      type: Array,
-      required: true
-    }
+  setup() {
+    const cart = inject("cart", () => []);
+    return { cart };
   },
   computed: {
     total() {
-      return this.cart.reduce(
+      const cartArray = this.cart();
+      return cartArray.reduce(
         (sum, item) => sum + item.price * item.qty,
         0
       );
