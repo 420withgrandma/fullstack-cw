@@ -2,19 +2,19 @@
   <div>
     <h2>Checkout</h2>
 
-    <ul v-if="cart().length > 0"> //if the cart length is over 0
-      <li v-for="item in cart()" :key="item._id"> //runs a for loop for every item in cart
+    <ul v-if="cart().length > 0"> <!--if the cart length is over 0-->
+      <li v-for="item in cart()" :key="item._id"> <!--runs a for loop for every item in cart-->
         {{ item.subject }} x {{ item.qty }} = £{{ item.price * item.qty }}
       </li>
     </ul>
-    <p v-if="cart().length > 0">Total: £{{ total }}</p> //displays total if cart length is over 0
+    <p v-if="cart().length > 0">Total: £{{ total }}</p> <!--displays total if cart length is over 0-->
 
     <form @submit.prevent="handleSubmit">
       <div>
         <label for="name">Name:</label>
-        <input v-model="name" id="name" required /> //v-model acts like a form for user to input details
+        <input v-model="name" id="name" required /> <!--v-model acts like a form for user to input details-->
       </div>
-      <p v-if="nameError" style="color: red; margin-top: 6px;">{{ nameError }}</p> //if an incorrect name is entered an error message is displayed
+      <p v-if="nameError" style="color: red; margin-top: 6px;">{{ nameError }}</p> <!--if an incorrect name is entered an error message is displayed-->
 
       <div>
         <label for="phone">Phone:</label>
@@ -26,14 +26,14 @@
           title="Phone number must be exactly 10 digits"
         />
       </div>
-      <p v-if="phoneError" style="color: red; margin-top: 6px;">{{ phoneError }}</p> //if incorrect phone number is entered error message will be displayed
+      <p v-if="phoneError" style="color: red; margin-top: 6px;">{{ phoneError }}</p> <!--if incorrect phone number is entered error message will be displayed-->
 
       <button type="submit" :disabled="cart().length === 0">
         Place Order
       </button>
     </form>
 
-    <p v-if="cart().length === 0">Add lessons to cart before checkout.</p> // if cart length is 0 then a message telling user to add items to cart is displayed
+    <p v-if="cart().length === 0">Add lessons to cart before checkout.</p> <!--if cart length is 0 then a message telling user to add items to cart is displayed-->
   </div>
 </template>
 

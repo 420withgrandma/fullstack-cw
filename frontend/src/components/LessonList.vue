@@ -4,7 +4,7 @@
     
     <div style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
       <label for="sortBy" style="font-weight: bold; margin-right: 10px;">Sort by:</label>
-      <select v-model="sortBy" id="sortBy" style="padding: 5px; margin-right: 15px;"> //creates a model/form for sort function
+      <select v-model="sortBy" id="sortBy" style="padding: 5px; margin-right: 15px;"> <!--creates a model/form for sort function-->
         <option value="subject">Subject</option>
         <option value="price">Price</option>
         <option value="location">Location</option>
@@ -12,7 +12,7 @@
       </select>
 
       <label for="sortOrder" style="font-weight: bold; margin-right: 10px;">Order:</label>
-      <select v-model="sortOrder" id="sortOrder" style="padding: 5px;"> //creates a model/form of sort function
+      <select v-model="sortOrder" id="sortOrder" style="padding: 5px;"> <!--creates a model/form of sort function-->
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
       </select>
