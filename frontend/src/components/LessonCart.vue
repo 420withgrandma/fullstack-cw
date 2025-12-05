@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2>Your Cart</h2>
-    <ul v-if="cart().length > 0">
-      <li v-for="item in cart()" :key="item._id">
+    <ul v-if="cart().length > 0"> //IF cart length is greater then 0 it will run following code
+      <li v-for="item in cart()" :key="item._id"> //v-for is a for loop
         {{ item.subject }} - {{ item.location }}
         <br>
         £{{ item.price }} x {{ item.qty }} = £{{ item.price * item.qty }}
@@ -10,9 +10,9 @@
         <button @click="$emit('remove-from-cart', item)">Remove One</button>
       </li>
     </ul>
-    <p v-else>Your cart is empty.</p>
+    <p v-else>Your cart is empty.</p> //if the for statement above is not met then it uses the else statement
 
-    <p v-if="cart().length > 0">Total: £{{ total }}</p>
+    <p v-if="cart().length > 0">Total: £{{ total }}</p> // if cart length over 0 it will show the total
   </div>
 </template>
 

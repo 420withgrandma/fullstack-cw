@@ -1,7 +1,9 @@
+// immport mongoose and lesson model
 const mongoose = require("mongoose");
 const Lesson = require("./models/Lesson");
-require("dotenv").config();
+require("dotenv").config(); // load env varibales so we can use MONGO_URI
 
+// connect to mongo atlas using the URI stored in env variables
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB for seeding");

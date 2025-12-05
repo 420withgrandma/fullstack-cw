@@ -12,14 +12,14 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "axios"; //import axios for http requests
 
 export default {
   name: "App",
   data() {
     return {
-      lessons: [],
-      cart: []
+      lessons: [], //lessons fetched from backend
+      cart: [] //items user adds to cart
     };
   },
   provide() {
@@ -31,23 +31,24 @@ export default {
       submitOrder: this.submitOrder
     };
   },
+  //fetch lessons from backend api
   created() {
     axios.get("http://localhost:5000/lessons")
       .then(res => { this.lessons = res.data; })
       .catch(err => { console.error("Failed to fetch lessons:", err); });
   },
   methods: {
-    addToCart(lesson) {
+    addToCart(lesson) { //add a lesson to the cart
       if (lesson.spaces > 0) {
-        const existing = this.cart.find(item => item._id === lesson._id);
+        const existing = this.cart.find(item => item._id === lesson._id); //checks if lesson already exists in cart
         if (existing) {
-          existing.qty++;
+          existing.qty++; //if it exists then incerase the quantity in the cart
         } else {
           this.cart.push({ ...lesson, qty: 1 });
         }
-        lesson.spaces--;
+        lesson.spaces--; //decrease available spaces
 
-        axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
+        axios.put(`http://localhost:5000/lessons/${lesson._id}`, { //update lesson spaces in backend
           spaces: lesson.spaces
         })
         .then(res => console.log("Lesson updated:", res.data))
@@ -57,21 +58,22 @@ export default {
       }
     },
 
+    //remove a lesson from the cart function
     removeFromCart(lesson) {
       const existing = this.cart.find(item => item._id === lesson._id);
       if (existing) {
         if (existing.qty > 1) {
-          existing.qty--;
+          existing.qty--; //reduces quantity 
         } else {
-          this.cart = this.cart.filter(item => item._id !== lesson._id);
+          this.cart = this.cart.filter(item => item._id !== lesson._id); //removes item completely from cart if quantity is 1
         }
 
-        const targetLesson = this.lessons.find(l => l._id === lesson._id);
+        const targetLesson = this.lessons.find(l => l._id === lesson._id); //incerases spaces back in lessonlist
         if (targetLesson) {
           targetLesson.spaces++;
         }
 
-        axios.put(`http://localhost:5000/lessons/${lesson._id}`, {
+        axios.put(`http://localhost:5000/lessons/${lesson._id}`, { //update backend with new spaces
           spaces: targetLesson ? targetLesson.spaces : lesson.spaces
         })
         .then(res => console.log("Lesson spaces updated:", res.data))
@@ -79,12 +81,14 @@ export default {
       }
     },
 
+    //submit an ordert to backend
     submitOrder(orderDetails) {
       axios.post("http://localhost:5000/orders", orderDetails)
         .then(() => {
           alert("Order placed successfully!");
-          this.cart = [];
+          this.cart = []; //clear cart after order
 
+          //refresh lessons from backend to update spaces
           axios.get("http://localhost:5000/lessons")
             .then(res => { this.lessons = res.data; })
             .catch(err => console.error("Failed to refresh lessons:", err));

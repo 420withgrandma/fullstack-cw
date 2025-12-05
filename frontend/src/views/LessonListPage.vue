@@ -6,13 +6,13 @@
 
 <script>
 import { inject } from "vue";
-import LessonList from "../components/LessonList.vue";
+import LessonList from "../components/LessonList.vue"; //import lessonlist component 
 
 export default {
   name: "LessonListPage",
-  components: { LessonList },
+  components: { LessonList }, //register lessonlist component
   setup() {
-    const addToCart = inject("addToCart", () => {});
+    const addToCart = inject("addToCart", () => {}); //inject addtocart function from app.vue
     return { addToCart };
   }
 };

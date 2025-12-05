@@ -13,15 +13,15 @@
 </template>
 
 <script>
-import { inject } from "vue";
-import LessonCart from "../components/LessonCart.vue";
-import LessonCheckout from "../components/LessonCheckout.vue";
+import { inject } from "vue"; 
+import LessonCart from "../components/LessonCart.vue"; //cart component
+import LessonCheckout from "../components/LessonCheckout.vue"; //checkout component
 
 export default {
   name: "CartCheckoutPage",
-  components: { LessonCart, LessonCheckout },
+  components: { LessonCart, LessonCheckout }, //register the components
   setup() {
-    const removeFromCart = inject("removeFromCart", () => {});
+    const removeFromCart = inject("removeFromCart", () => {}); //injects removefromcart fuction from app.vue
     return { removeFromCart };
   }
 };
